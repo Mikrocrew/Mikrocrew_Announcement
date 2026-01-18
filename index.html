@@ -124,7 +124,7 @@
           <input
             type="text"
             id="inputNama"
-            placeholder="KETIK NAMA ANDA"
+            placeholder="KETIK NAMA LENGKAP"
             onkeydown="if(event.key === 'Enter') checkInput()"
             class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-center text-sky-100 outline-none focus:border-sky-500 transition-all uppercase"
           />
@@ -145,13 +145,13 @@
           <div class="flex gap-3">
             <button
               onclick="startProcess()"
-              class="flex-1 bg-sky-600 py-3 rounded-xl font-bold active:scale-95 transition-all"
+              class="flex-1 bg-sky-600 py-3 rounded-xl font-bold active:scale-95 transition-all text-white"
             >
               SAYA MENGERTI
             </button>
             <button
               onclick="location.reload()"
-              class="flex-1 bg-slate-800 py-3 rounded-xl"
+              class="flex-1 bg-slate-800 py-3 rounded-xl text-white"
             >
               KEMBALI
             </button>
@@ -188,36 +188,35 @@
     </div>
 
     <script>
-      /* --- DATABASE --- */
+      /* --- DATABASE (Kecil Semua & Rapi) --- */
       const database = {
-        "M Aghni Argha Sentosa" : "lulus",
-        "Ibra Agusti Dzul Faqar"
-        "Jovian Dwi Radityan"
-        "Hazlamy Altaf Qawiem"
-        "Sarah Naza Bayeva"
-        "Ahmad Irfan Nurdzaki"
-        "Revandi Prima Ar Ridho"
-        "SETO AJI ILHAM GUMELAR"
-        "Adibrata Dormad Drajad"
-        "Bastyar Akas Kusuma Pangestu"
-        "Mualib Arie Belta"
-        "Alfin wahyu pratama"
-        "Nabila Shafa Ibroham"
-        "Muhammad Surya Putra Khoirurrahman"
-        "SHELIYA INDAH FEBIYANTI"
-        "Bastyar Akas Kusuma Pangestu"
-"ZAQQIA ZULFIANA MUSTIKAWATI"
-"Novalia Charista Putri" 
-"Bintang Yasmine Faradis"
-"Kamilatussalimah"
-"Salman Abdullah"
-"Ibra Agusti Dzul Faqar"
-"Abdul Jamal Musa A"
-"Amanda Maritza"
-"Istiqomah Kurnia Ramadani"
-"Muhammad Fauzan Ramadhani"
-"Muhamad Rakha Yanuarta" : "lulus",
-"Ezizazada Hulul Hukama Sutrisno"
+        "raditya raka nahyatama": "lulus",             
+        "m aghni argha sentosa": "",
+        "ibra agusti dzul faqar": "",
+        "jovian dwi radityan": "",
+        "hazlamy altaf qawiem": "",
+        "sarah naza bayeva": "",
+        "ahmad irfan nurdzaki": "",
+        "revandi prima ar ridho": "",
+        "seto aji ilham gumelar": "",
+        "adibrata dormad drajad": "",
+        "bastyar akas kusuma pangestu": "",
+        "mualib arie belta": "",
+        "alfin wahyu pratama": "",
+        "nabila shafa ibroham": "",
+        "muhammad surya putra khoirurrahman": "",
+        "sheliya indah febiyanti": "",
+        "zaqqia zulfiana mustikawati": "",
+        "novalia charista putri": "",
+        "bintang yasmine faradis": "",
+        "kamilatussalimah": "",
+        "salman abdullah": "",
+        "abdul jamal musa a": "",
+        "amanda maritza": "",
+        "istiqomah kurnia ramadani": "",
+        "muhammad fauzan ramadhani": "",
+        "muhamad rakha yanuarta": "",
+        "ezizazada hulul hukama sutrisno": ""
       };
 
       const inputNama = document.getElementById("inputNama");
@@ -245,7 +244,7 @@
       function startProcess() {
         document.getElementById("step2").classList.add("hidden");
         blackout.style.display = "flex";
-        pBar.style.width = "0%"; // Reset bar
+        pBar.style.width = "0%";
         setTimeout(() => (pBar.style.width = "100%"), 100);
 
         setTimeout(() => {
@@ -258,7 +257,9 @@
       }
 
       function showFinalResult() {
-        const namaUser = inputNama.value.toLowerCase().trim();
+        /* FUNGSI PINTAR: Kecilkan semua, hapus spasi ujung, hapus spasi ganda di tengah */
+        const namaUser = inputNama.value.toLowerCase().trim().replace(/\s+/g, ' ');
+        
         const resultArea = document.getElementById("result-area");
         const icon = document.getElementById("result-icon");
         const title = document.getElementById("result-title");
@@ -267,43 +268,38 @@
 
         resultArea.classList.remove("hidden");
 
-        // LOGIKA BARU: Cek keberadaan data
         if (database[namaUser] === undefined) {
-          // KASUS: DATA TIDAK ADA (Bisa Ulang Lagi)
           icon.innerHTML = "🔍";
-          title.innerText = "DATA TIDAK ADA KETIK YANG BENER DONG❗❗❗";
-          title.className = "text-2xl font-black mb-2 text-slate-400";
-          desc.innerHTML = `Nama <b>${inputNama.value}</b> tidak terdaftar. Mungkin kamu salah ketik?`;
-          actionArea.innerHTML = `<button onclick="retry()" class="w-full bg-slate-700 py-3 rounded-xl font-bold">COBA LAGI</button>`;
-
-          // PENTING: Jangan simpan localStorage.setItem di sini
+          title.innerText = "DATA TIDAK ADA";
+          title.className = "text-xl font-black mb-2 text-slate-400";
+          desc.innerHTML = `Nama <b>${inputNama.value}</b> tidak terdaftar. Periksa kembali ejaan nama lengkapmu!`;
+          actionArea.innerHTML = `<button onclick="retry()" class="w-full bg-slate-700 py-3 rounded-xl font-bold text-white">COBA LAGI</button>`;
         } else {
-          // KASUS: DATA ADA (Lulus atau Gagal) -> KUNCI AKSES!
+          // KUNCI AKSES karena data ditemukan
           localStorage.setItem("mikrocrew_scanned", "true");
 
           if (database[namaUser] === "lulus") {
             icon.innerHTML = "✨";
             title.innerText = "ANDA LULUS";
             title.className = "text-2xl font-black mb-2 text-emerald-400";
-            desc.innerHTML = `Selamat <b>${inputNama.value}</b>! Welcome to the Crew! Standar kamu telah teruji. Simpan bukti ini dan bersiaplah untuk tantangan berikutnya. Perjalanan dimulai dari sekarang. Silakan gabung ke grup koordinasi sekarang.`;
-            actionArea.innerHTML = `<a href="https://chat.whatsapp.com/CDlD8R2hEpB6bLgW4er0Q3" target="_blank" class="block w-full bg-emerald-600 py-4 rounded-xl font-bold shadow-lg shadow-emerald-900/40">GABUNG GRUP WHATSAPP</a>`;
+            desc.innerHTML = `Selamat <b>${inputNama.value}</b>! Welcome to the Crew. Standar kamu telah teruji. Simpan bukti ini dan bersiaplah untuk tantangan berikutnya. Perjalanan dimulai dari sekarang. Silakan gabung ke grup koordinasi.`;
+            actionArea.innerHTML = `<a href="https://chat.whatsapp.com/CDlD8R2hEpB6bLgW4er0Q3" target="_blank" class="block w-full bg-emerald-600 py-4 rounded-xl font-bold shadow-lg shadow-emerald-900/40 text-white">GABUNG GRUP WHATSAPP</a>`;
             celebrate();
           } else {
             icon.innerHTML = "🛡️";
             title.innerText = "BELUM BERHASIL";
             title.className = "text-2xl font-black mb-2 text-rose-500";
-            desc.innerHTML = `Mohon maaf <b>${inputNama.value}</b>, istem menyatakan kamu belum berhasil kali ini. Namun, potensi manusia tidak bisa didefinisikan oleh satu algoritma. Tetap semangat, asah kemampuanmu, dan teruslah berkembang.`;
-            actionArea.innerHTML = `<p class="text-[10px] text-slate-600 uppercase mt-4">Sistem Terkunci Otomatis</p>`;
+            desc.innerHTML = `Mohon maaf <b>${inputNama.value}</b>, sistem menyatakan kamu belum berhasil kali ini. Namun, potensi manusia tidak bisa didefinisikan oleh satu algoritma. Tetap semangat dan teruslah berkembang.`;
+            actionArea.innerHTML = `<p class="text-[10px] text-slate-600 uppercase mt-4 tracking-widest">Sistem Terkunci Otomatis</p>`;
           }
         }
       }
 
-      // Fungsi untuk coba lagi jika data tidak ada
       function retry() {
         document.getElementById("result-area").classList.add("hidden");
         document.getElementById("step1").classList.remove("hidden");
         inputNama.value = "";
-        blackout.style.opacity = "1"; // Reset opacity buat nanti
+        blackout.style.opacity = "1";
       }
 
       function celebrate() {
@@ -334,7 +330,3 @@
     </script>
   </body>
 </html>
-
-
-
-
