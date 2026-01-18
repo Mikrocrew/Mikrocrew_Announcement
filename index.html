@@ -248,9 +248,9 @@
         if (database[namaUser] === undefined) {
           // KASUS: DATA TIDAK ADA (Bisa Ulang Lagi)
           icon.innerHTML = "🔍";
-          title.innerText = "DATA TIDAK ADA";
+          title.innerText = "DATA TIDAK ADA KETIK YANG BENER DONG❗❗❗";
           title.className = "text-2xl font-black mb-2 text-slate-400";
-          desc.innerHTML = `Nama <b>${inputNama.value}</b> tidak terdaftar. Mungkin ada salah ketik?`;
+          desc.innerHTML = `Nama <b>${inputNama.value}</b> tidak terdaftar. Mungkin kamu salah ketik?`;
           actionArea.innerHTML = `<button onclick="retry()" class="w-full bg-slate-700 py-3 rounded-xl font-bold">COBA LAGI</button>`;
 
           // PENTING: Jangan simpan localStorage.setItem di sini
@@ -262,14 +262,14 @@
             icon.innerHTML = "✨";
             title.innerText = "ANDA LULUS";
             title.className = "text-2xl font-black mb-2 text-emerald-400";
-            desc.innerHTML = `Selamat <b>${inputNama.value}</b>! Silakan gabung ke grup koordinasi sekarang.`;
+            desc.innerHTML = `Selamat <b>${inputNama.value}</b>! Welcome to the Crew! Standar kamu telah teruji. Simpan bukti ini dan bersiaplah untuk tantangan berikutnya. Perjalanan dimulai dari sekarang. Silakan gabung ke grup koordinasi sekarang.`;
             actionArea.innerHTML = `<a href="https://chat.whatsapp.com/CDlD8R2hEpB6bLgW4er0Q3" target="_blank" class="block w-full bg-emerald-600 py-4 rounded-xl font-bold shadow-lg shadow-emerald-900/40">GABUNG GRUP WHATSAPP</a>`;
             celebrate();
           } else {
             icon.innerHTML = "🛡️";
             title.innerText = "BELUM BERHASIL";
             title.className = "text-2xl font-black mb-2 text-rose-500";
-            desc.innerHTML = `Mohon maaf <b>${inputNama.value}</b>, Anda dinyatakan belum lulus seleksi kali ini.`;
+            desc.innerHTML = `Mohon maaf <b>${inputNama.value}</b>, istem menyatakan kamu belum berhasil kali ini. Namun, potensi manusia tidak bisa didefinisikan oleh satu algoritma. Tetap semangat, asah kemampuanmu, dan teruslah berkembang.`;
             actionArea.innerHTML = `<p class="text-[10px] text-slate-600 uppercase mt-4">Sistem Terkunci Otomatis</p>`;
           }
         }
@@ -311,4 +311,5 @@
     </script>
   </body>
 </html>
+
 
