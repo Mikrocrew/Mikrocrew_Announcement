@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mikrocrew | Smart Secure Scan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #020617;
+        font-family: "JetBrains Mono", monospace;
+        overflow: hidden;
+        color: #e2e8f0;
+      }
+
+      .pcb-bg {
+        position: fixed;
+        inset: 0;
+        background-image: linear-gradient(
+            rgba(56, 189, 248, 0.05) 1px,
+            transparent 1px
+          ),
+          linear-gradient(90deg, rgba(56, 189, 248, 0.05) 1px, transparent 1px);
+        background-size: 50px 50px;
+        z-index: -3;
+        animation: pcbMove 20s linear infinite;
+      }
+
+      @keyframes pcbMove {
+        from {
+          background-position: 0 0;
+        }
+        to {
+          background-position: 50px 50px;
+        }
+      }
+
+      .glass-card {
+        background: rgba(15, 23, 42, 0.85);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(56, 189, 248, 0.2);
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.5);
+      }
+
+      .fade-in {
+        animation: fadeIn 0.6s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .blackout {
+        position: fixed;
+        inset: 0;
+        background: black;
+        z-index: 100;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.5s;
+      }
+
+      .loading-bar {
+        width: 0%;
+        height: 4px;
+        background: #38bdf8;
+        box-shadow: 0 0 10px #38bdf8;
+        transition: width 2.5s ease-in-out;
+      }
+      .blink {
+        animation: blinker 1s linear infinite;
+      }
+      @keyframes blinker {
+        50% {
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="pcb-bg"></div>
+
+    <div id="blackout" class="blackout">
+      <div class="text-sky-500 text-sm tracking-[0.5em] mb-4 uppercase">
+        Scanning Database
+      </div>
+      <div class="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
+        <div id="p-bar" class="loading-bar"></div>
+      </div>
+    </div>
+
+    <div class="flex items-center justify-center min-h-screen p-4">
+      <div
+        id="main-card"
+        class="glass-card w-full max-w-md rounded-3xl p-8 text-center fade-in"
+      >
+        <div id="step1" class="space-y-6">
+          <div class="mb-8">
+            <h1 class="text-sky-400 font-bold tracking-[0.3em] text-xl">
+              MIKROCREW
+            </h1>
+            <p
+              class="text-slate-500 text-[10px] mt-1 uppercase tracking-widest"
+            >
+              Single-Access Security
+            </p>
+          </div>
+          <input
+            type="text"
+            id="inputNama"
+            placeholder="KETIK NAMA ANDA"
+            onkeydown="if(event.key === 'Enter') checkInput()"
+            class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-center text-sky-100 outline-none focus:border-sky-500 transition-all uppercase"
+          />
+          <button
+            onclick="checkInput()"
+            class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95"
+          >
+            START SCAN
+          </button>
+        </div>
+
+        <div id="step2" class="hidden space-y-6 fade-in">
+          <div class="text-amber-500 text-4xl mb-2">⚠️</div>
+          <p class="text-slate-300 text-sm italic">
+            "Pastikan nama sudah benar. Jika data ditemukan, Anda hanya bisa
+            melihat hasilnya satu kali saja."
+          </p>
+          <div class="flex gap-3">
+            <button
+              onclick="startProcess()"
+              class="flex-1 bg-sky-600 py-3 rounded-xl font-bold active:scale-95 transition-all"
+            >
+              SAYA MENGERTI
+            </button>
+            <button
+              onclick="location.reload()"
+              class="flex-1 bg-slate-800 py-3 rounded-xl"
+            >
+              KEMBALI
+            </button>
+          </div>
+        </div>
+
+        <div id="result-area" class="hidden fade-in">
+          <div id="result-icon" class="text-6xl mb-4"></div>
+          <h2
+            id="result-title"
+            class="text-2xl font-black mb-2 uppercase tracking-tighter"
+          ></h2>
+          <p
+            id="result-desc"
+            class="text-slate-400 text-sm leading-relaxed mb-8"
+          ></p>
+          <div id="action-area"></div>
+        </div>
+
+        <div id="locked-area" class="hidden fade-in text-center">
+          <div class="text-rose-600 text-6xl mb-4 blink">🔒</div>
+          <h2 class="text-2xl font-black text-rose-500 mb-2">AKSES DITOLAK</h2>
+          <p class="text-slate-400 text-sm leading-relaxed mb-6">
+            Perangkat ini sudah digunakan untuk melihat hasil. <br />Keamanan
+            sistem aktif.
+          </p>
+          <div
+            class="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-[10px] text-rose-300"
+          >
+            USER_DATA_ALREADY_REVEALED
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      /* --- DATABASE --- */
+      const database = {
+        raka: "lulus",
+        andi: "lulus",
+        bayu: "lulus",
+        siti: "gagal",
+        budi: "gagal",
+      };
+
+      const inputNama = document.getElementById("inputNama");
+      const blackout = document.getElementById("blackout");
+      const pBar = document.getElementById("p-bar");
+
+      // Cek Lock saat buka
+      window.onload = function () {
+        if (localStorage.getItem("mikrocrew_scanned") === "true") {
+          document.getElementById("step1").classList.add("hidden");
+          document.getElementById("locked-area").classList.remove("hidden");
+        }
+      };
+
+      function checkInput() {
+        if (inputNama.value.trim() === "") {
+          inputNama.classList.add("border-rose-500");
+          setTimeout(() => inputNama.classList.remove("border-rose-500"), 500);
+          return;
+        }
+        document.getElementById("step1").classList.add("hidden");
+        document.getElementById("step2").classList.remove("hidden");
+      }
+
+      function startProcess() {
+        document.getElementById("step2").classList.add("hidden");
+        blackout.style.display = "flex";
+        pBar.style.width = "0%"; // Reset bar
+        setTimeout(() => (pBar.style.width = "100%"), 100);
+
+        setTimeout(() => {
+          blackout.style.opacity = "0";
+          setTimeout(() => {
+            blackout.style.display = "none";
+            showFinalResult();
+          }, 500);
+        }, 3000);
+      }
+
+      function showFinalResult() {
+        const namaUser = inputNama.value.toLowerCase().trim();
+        const resultArea = document.getElementById("result-area");
+        const icon = document.getElementById("result-icon");
+        const title = document.getElementById("result-title");
+        const desc = document.getElementById("result-desc");
+        const actionArea = document.getElementById("action-area");
+
+        resultArea.classList.remove("hidden");
+
+        // LOGIKA BARU: Cek keberadaan data
+        if (database[namaUser] === undefined) {
+          // KASUS: DATA TIDAK ADA (Bisa Ulang Lagi)
+          icon.innerHTML = "🔍";
+          title.innerText = "DATA TIDAK ADA";
+          title.className = "text-2xl font-black mb-2 text-slate-400";
+          desc.innerHTML = `Nama <b>${inputNama.value}</b> tidak terdaftar. Mungkin ada salah ketik?`;
+          actionArea.innerHTML = `<button onclick="retry()" class="w-full bg-slate-700 py-3 rounded-xl font-bold">COBA LAGI</button>`;
+
+          // PENTING: Jangan simpan localStorage.setItem di sini
+        } else {
+          // KASUS: DATA ADA (Lulus atau Gagal) -> KUNCI AKSES!
+          localStorage.setItem("mikrocrew_scanned", "true");
+
+          if (database[namaUser] === "lulus") {
+            icon.innerHTML = "✨";
+            title.innerText = "ANDA LULUS";
+            title.className = "text-2xl font-black mb-2 text-emerald-400";
+            desc.innerHTML = `Selamat <b>${inputNama.value}</b>! Silakan gabung ke grup koordinasi sekarang.`;
+            actionArea.innerHTML = `<a href="https://chat.whatsapp.com/CDlD8R2hEpB6bLgW4er0Q3" target="_blank" class="block w-full bg-emerald-600 py-4 rounded-xl font-bold shadow-lg shadow-emerald-900/40">GABUNG GRUP WHATSAPP</a>`;
+            celebrate();
+          } else {
+            icon.innerHTML = "🛡️";
+            title.innerText = "BELUM BERHASIL";
+            title.className = "text-2xl font-black mb-2 text-rose-500";
+            desc.innerHTML = `Mohon maaf <b>${inputNama.value}</b>, Anda dinyatakan belum lulus seleksi kali ini.`;
+            actionArea.innerHTML = `<p class="text-[10px] text-slate-600 uppercase mt-4">Sistem Terkunci Otomatis</p>`;
+          }
+        }
+      }
+
+      // Fungsi untuk coba lagi jika data tidak ada
+      function retry() {
+        document.getElementById("result-area").classList.add("hidden");
+        document.getElementById("step1").classList.remove("hidden");
+        inputNama.value = "";
+        blackout.style.opacity = "1"; // Reset opacity buat nanti
+      }
+
+      function celebrate() {
+        var duration = 5 * 1000;
+        var animationEnd = Date.now() + duration;
+        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
+        }
+        var interval = setInterval(function () {
+          var timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+          var particleCount = 50 * (timeLeft / duration);
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            })
+          );
+          confetti(
+            Object.assign({}, defaults, {
+              particleCount,
+              origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            })
+          );
+        }, 250);
+      }
+    </script>
+  </body>
+</html>
