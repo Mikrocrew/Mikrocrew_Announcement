@@ -1,197 +1,336 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mikrocrew | Smart Secure Scan</title>
+    <title>Mikrocrew | Intelligence Gate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&family=JetBrains+Mono:wght@400;700&display=swap");
 
-      html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        background-color: #000;
-        font-family: "JetBrains Mono", monospace;
-        overflow: hidden;
+      body {
+        background-color: #010409;
+        font-family: "Space Grotesk", sans-serif;
         color: #e2e8f0;
+        overflow: hidden;
       }
 
-      /* BACKGROUND GRID - SETTINGAN PALING KONTRAS */
-      .pcb-bg {
+      .mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      /* 1. BACKGROUND GRID BERDENYUT (PULSING ELECTRIC) */
+      .pcb-grid {
         position: fixed;
         inset: 0;
-        z-index: 0; 
-        background-color: #020617;
-        background-image: 
-          linear-gradient(rgba(56, 189, 248, 0.3) 1.5px, transparent 1.5px),
-          linear-gradient(90deg, rgba(56, 189, 248, 0.3) 1.5px, transparent 1.5px);
-        background-size: 45px 45px;
-        animation: pcbMove 20s linear infinite;
+        z-index: 1;
+        background-image:
+          linear-gradient(rgba(56, 189, 248, 0.4) 1.5px, transparent 1.5px),
+          linear-gradient(
+            90deg,
+            rgba(56, 189, 248, 0.4) 1.5px,
+            transparent 1.5px
+          );
+        background-size: 50px 50px;
+        animation:
+          moveGrid 10s linear infinite,
+          pulseElectric 3s ease-in-out infinite;
+        pointer-events: none;
       }
 
-      @keyframes pcbMove {
-        from { background-position: 0 0; }
-        to { background-position: 45px 45px; }
+      @keyframes moveGrid {
+        from {
+          background-position: 0 0;
+        }
+        to {
+          background-position: 50px 50px;
+        }
       }
 
-      .glass-card {
+      @keyframes pulseElectric {
+        0%,
+        100% {
+          filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+          opacity: 0.6;
+        }
+        50% {
+          filter: drop-shadow(0 0 25px rgba(56, 189, 248, 1));
+          opacity: 1;
+        }
+      }
+
+      .vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 2;
+        background: radial-gradient(
+          circle at center,
+          transparent 10%,
+          #010409 110%
+        );
+        pointer-events: none;
+      }
+
+      /* 2. ELECTRIC BORDER BEAM (Efek Aliran Listrik Muter) */
+      .gate-card {
         position: relative;
-        z-index: 10; 
-        background: rgba(15, 23, 42, 0.9);
-        backdrop-filter: blur(12px);
+        z-index: 10;
+        background: rgba(10, 15, 25, 0.9);
+        backdrop-filter: blur(25px);
         border: 1px solid rgba(56, 189, 248, 0.2);
-        box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+        overflow: hidden;
+        box-shadow: 0 0 80px rgba(0, 0, 0, 0.8);
       }
 
-      .fade-in { animation: fadeIn 1s ease-out forwards; }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
+      .gate-card::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(
+          transparent,
+          transparent,
+          transparent,
+          #38bdf8
+        );
+        animation: rotateElectric 4s linear infinite;
+        z-index: -1;
       }
 
-      .blackout {
-        position: fixed;
-        inset: 0;
-        background: black;
-        z-index: 100;
-        display: none;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.5s;
+      .gate-card::after {
+        content: "";
+        position: absolute;
+        inset: 2px;
+        background: rgba(10, 15, 25, 0.95);
+        border-radius: 1.9rem;
+        z-index: -1;
       }
 
-      .loading-bar {
-        width: 0%;
-        height: 4px;
+      @keyframes rotateElectric {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* 3. NEON FLICKER TEXT */
+      h1.glow-text {
+        text-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+        animation: neonFlicker 5s infinite;
+      }
+
+      @keyframes neonFlicker {
+        0%,
+        18%,
+        22%,
+        25%,
+        53%,
+        57%,
+        100% {
+          text-shadow: 0 0 15px rgba(56, 189, 248, 0.8);
+        }
+        20%,
+        24%,
+        55% {
+          text-shadow: none;
+          opacity: 0.8;
+        }
+      }
+
+      .btn-auth {
+        background: #ffffff;
+        color: #020617;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .btn-auth:hover {
         background: #38bdf8;
-        box-shadow: 0 0 15px #38bdf8;
-        transition: width 4.5s ease-in-out;
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(56, 189, 248, 0.8);
+        color: white;
       }
 
-      .blink { animation: blinker 1s linear infinite; }
-      @keyframes blinker { 50% { opacity: 0; } }
+      .fade-in {
+        animation: fadeIn 2s ease-out forwards;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
     </style>
   </head>
-  <body>
-    <div class="pcb-bg"></div>
+  <body class="flex items-center justify-center min-h-screen">
+    <div class="pcb-grid"></div>
+    <div class="vignette"></div>
 
-    <div id="blackout" class="blackout">
-      <div class="text-sky-500 text-sm tracking-[0.5em] mb-4 uppercase blink">
-        Scanning Database
-      </div>
-      <div class="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
-        <div id="p-bar" class="loading-bar"></div>
+    <div
+      id="blackout"
+      class="fixed inset-0 bg-black/95 z-[100] hidden flex-col items-center justify-center p-8"
+    >
+      <div class="w-full max-w-sm">
+        <div
+          class="terminal-text mb-6 mono text-sky-400 text-xs"
+          id="terminal-logs"
+        ></div>
+        <div class="w-full h-[2px] bg-slate-800">
+          <div
+            id="p-bar"
+            class="h-full bg-sky-400 w-0 transition-all duration-[6000ms] ease-linear shadow-[0_0_20px_rgba(56,189,248,1)]"
+          ></div>
+        </div>
       </div>
     </div>
 
-    <div class="flex items-center justify-center min-h-screen p-4">
-      <div id="main-card" class="glass-card w-full max-w-md rounded-3xl p-8 text-center fade-in">
-        
-        <div id="step1" class="space-y-6">
-          <div class="mb-8">
-            <h1 class="text-sky-400 font-bold tracking-[0.3em] text-xl">MIKROCREW</h1>
-            <p class="text-slate-500 text-[10px] mt-1 uppercase tracking-widest">Single-Access Security</p>
+    <div class="w-full max-w-md px-6">
+      <div
+        id="main-card"
+        class="gate-card rounded-[2rem] p-10 text-center fade-in"
+      >
+        <div id="step1">
+          <div class="mb-12">
+            <h2
+              class="text-[10px] tracking-[0.7em] text-sky-400 font-bold uppercase mb-3"
+            >
+              System Access
+            </h2>
+            <h1
+              class="text-4xl font-bold tracking-tighter text-white glow-text"
+            >
+              MIKROCREW
+            </h1>
           </div>
-          <input
-            type="text"
-            id="inputNama"
-            placeholder="KETIK NAMA SESUAI PENDAFTARAN❗❗❗"
-            onkeydown="if(event.key === 'Enter') checkInput()"
-            class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-center text-sky-100 outline-none focus:border-sky-500 transition-all uppercase"
-          />
-          <button
-            onclick="checkInput()"
-            class="w-full bg-sky-600 hover:bg-sky-500 text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95"
+          <div class="space-y-6">
+            <input
+              type="text"
+              id="inputNama"
+              placeholder="KETIK NAMA LENGKAP"
+              class="w-full bg-transparent border-b border-slate-700/50 py-3 text-center text-lg outline-none focus:border-sky-400 transition-all mono uppercase placeholder:text-slate-800"
+            />
+            <button
+              onclick="checkInput()"
+              class="w-full mt-8 btn-auth font-bold py-5 rounded-full text-[11px] tracking-[0.4em] uppercase"
+            >
+              Authenticate
+            </button>
+          </div>
+        </div>
+
+        <div id="step2" class="hidden">
+          <h2
+            class="text-rose-500 mono text-[10px] uppercase tracking-[0.4em] font-bold mb-6"
           >
-            START SCAN
-          </button>
-        </div>
-
-        <div id="step2" class="hidden space-y-6 fade-in">
-          <div class="text-amber-500 text-4xl mb-2">⚠️</div>
-          <p class="text-slate-300 text-sm italic">
-            "Pastikan nama sudah benar. Jika data ditemukan, Anda hanya bisa melihat hasilnya satu kali saja."
+            Final Warning
+          </h2>
+          <h1 class="text-xl font-bold text-white leading-tight mb-6 px-4">
+            Kamu benar-benar yakin ingin melihat hasilnya sekarang?
+          </h1>
+          <p class="text-slate-400 text-xs leading-relaxed mb-10 px-2 italic">
+            "Satu klik ini akan menentukan langkahmu selanjutnya. Tidak ada
+            jalan kembali setelah dekripsi dimulai."
           </p>
-          <div class="flex gap-3">
-            <button onclick="startProcess()" class="flex-1 bg-sky-600 py-3 rounded-xl font-bold text-white active:scale-95 transition-all">SAYA MENGERTI</button>
-            <button onclick="location.reload()" class="flex-1 bg-slate-800 py-3 rounded-xl text-white">KEMBALI</button>
+          <div class="space-y-3">
+            <button
+              onclick="startProcess()"
+              class="w-full btn-auth font-bold py-5 rounded-full text-[11px] tracking-[0.2em] uppercase"
+            >
+              Ya, Saya Siap Apapun Hasilnya
+            </button>
+            <button
+              onclick="location.reload()"
+              class="w-full text-slate-500 text-[10px] uppercase tracking-widest hover:text-sky-300 py-2"
+            >
+              Batalkan
+            </button>
           </div>
         </div>
 
-        <div id="result-area" class="hidden fade-in">
-          <div id="result-icon" class="text-6xl mb-4"></div>
-          <h2 id="result-title" class="text-2xl font-black mb-2 uppercase tracking-tighter"></h2>
-          <p id="result-desc" class="text-slate-400 text-sm leading-relaxed mb-8"></p>
+        <div id="result-area" class="hidden">
+          <div id="result-icon" class="text-7xl mb-8"></div>
+          <h2
+            id="result-title"
+            class="text-3xl font-bold mb-6 tracking-tight uppercase"
+          ></h2>
+          <div
+            id="result-desc"
+            class="text-slate-400 leading-relaxed mb-10 text-sm italic"
+          ></div>
           <div id="action-area"></div>
         </div>
 
-        <div id="locked-area" class="hidden fade-in text-center">
-          <div class="text-rose-600 text-6xl mb-4 blink">🔒</div>
-          <h2 class="text-2xl font-black text-rose-500 mb-2">AKSES DITOLAK</h2>
-          <p class="text-slate-400 text-sm leading-relaxed mb-6">
-            Perangkat ini sudah digunakan untuk melihat hasil. <br />Keamanan sistem aktif.
+        <div id="locked-area" class="hidden">
+          <div class="text-5xl mb-6 text-rose-500">🔒</div>
+          <h2
+            class="text-xl font-bold text-white mb-2 uppercase tracking-widest"
+          >
+            Access Denied
+          </h2>
+          <p class="text-slate-500 text-[10px] mono uppercase">
+            Sistem hanya mengizinkan satu kali akses.<br />Data Anda telah
+            terkunci.
           </p>
-          <div class="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-[10px] text-rose-300">
-            USER_DATA_ALREADY_REVEALED
-          </div>
         </div>
       </div>
     </div>
 
     <script>
-      /* --- DATABASE (SILAKAN ISI: "lulus" ATAU "gagal") --- */
       const database = {
         "raditya raka nahyatama": "lulus",
-        "m aghni argha sentosa": "",
-        "ibra agusti dzul faqar": "",
-        "jovian dwi radityan": "",
-        "hazlamy altaf qawiem": "",
-        "sarah naza bayeva": "",
-        "ahmad irfan nurdzaki": "",
-        "revandi prima ar ridho": "",
-        "seto aji ilham gumelar": "",
-        "adibrata dormad drajad": "",
-        "bastyar akas kusuma pangestu": "",
-        "mualib arie belta": "",
-        "alfin wahyu pratama": "",
-        "nabila shafa ibroham": "",
-        "muhammad surya putra khoirurrahman": "",
-        "sheliya indah febiyanti": "",
-        "zaqqia zulfiana mustikawati": "",
-        "novalia charista putri": "",
-        "bintang yasmine faradis": "",
-        "kamilatussalimah": "",
-        "salman abdullah": "",
-        "abdul jamal musa a": "",
-        "amanda maritza": "",
-        "istiqomah kurnia ramadani": "",
-        "muhammad fauzan ramadhani": "",
-        "muhamad rakha yanuarta": "",
-        "ezizazada hulul hukama sutrisno": ""
+        "m aghni argha sentosa": "gagal",
+        "ibra agusti dzul faqar": "gagal",
+        "jovian dwi radityan": "gagal",
+        "hazlamy altaf qawiem": "lulus",
+        "sarah naza bayeva": "gagal",
+        "ahmad irfan nurdzaki": "lulus",
+        "revandi prima ar ridho": "lulus",
+        "seto aji ilham gumelar": "lulus",
+        "adibrata dormad drajad": "gagal",
+        "bastyar akas kusuma pangestu": "gagal",
+        "mualib arie belta": "lulus",
+        "alfin wahyu pratama": "gagal",
+        "nabila shafa ibroham": "lulus",
+        "muhammad surya putra khoirurrahman": "gagal",
+        "sheliya indah febiyanti": "gagal",
+        "zaqqia zulfiana mustikawati": "gagal",
+        "novalia charista putri": "lulus",
+        "bintang yasmine faradis": "gagal",
+        kamilatussalimah: "gagal",
+        "salman abdullah": "gagal",
+        "abdul jamal musa a": "gagal",
+        "amanda maritza": "gagal",
+        "istiqomah kurnia ramadani": "gagal",
+        "muhammad fauzan ramadhani": "gagal",
+        "muhamad rakha yanuarta": "lulus",
+        "ezizazada hulul hukama sutrisno": "gagal",
       };
 
-      const inputNama = document.getElementById("inputNama");
       const blackout = document.getElementById("blackout");
+      const logs = document.getElementById("terminal-logs");
       const pBar = document.getElementById("p-bar");
+      const inputNama = document.getElementById("inputNama");
 
-      window.onload = function () {
-        if (localStorage.getItem("mikrocrew_scanned") === "true") {
+      window.onload = () => {
+        if (localStorage.getItem("mkr_checked") === "true") {
           document.getElementById("step1").classList.add("hidden");
           document.getElementById("locked-area").classList.remove("hidden");
         }
       };
 
       function checkInput() {
-        if (inputNama.value.trim() === "") {
-          inputNama.classList.add("border-rose-500");
-          setTimeout(() => inputNama.classList.remove("border-rose-500"), 500);
-          return;
-        }
+        if (!inputNama.value.trim()) return;
         document.getElementById("step1").classList.add("hidden");
         document.getElementById("step2").classList.remove("hidden");
       }
@@ -199,75 +338,81 @@
       function startProcess() {
         document.getElementById("step2").classList.add("hidden");
         blackout.style.display = "flex";
-        pBar.style.width = "0%";
         setTimeout(() => (pBar.style.width = "100%"), 100);
 
+        const lines = [
+          "> MEMBUKA ENKRIPSI DATABASE...",
+          "> MENCARI IDENTITAS CANDIDATE...",
+          "> MENGEVALUASI SKOR AKHIR...",
+          "> MENGUNCI AKSES PERANGKAT...",
+          "> MENAMPILKAN HASIL...",
+        ];
+
+        let i = 0;
+        const logInt = setInterval(() => {
+          if (i < lines.length) {
+            logs.innerHTML += `<div class="mb-1">${lines[i]}</div>`;
+            i++;
+          }
+        }, 1200);
+
         setTimeout(() => {
-          blackout.style.opacity = "0";
-          setTimeout(() => {
-            blackout.style.display = "none";
-            showFinalResult();
-          }, 500);
-        }, 5000);
+          clearInterval(logInt);
+          blackout.style.display = "none";
+          showResult();
+        }, 6500);
       }
 
-      function showFinalResult() {
-        const namaUser = inputNama.value.toLowerCase().trim().replace(/\s+/g, ' ');
-        const resultArea = document.getElementById("result-area");
-        const icon = document.getElementById("result-icon");
-        const title = document.getElementById("result-title");
-        const desc = document.getElementById("result-desc");
-        const actionArea = document.getElementById("action-area");
+      function showResult() {
+        const user = inputNama.value.toLowerCase().trim().replace(/\s+/g, " ");
+        const status = database[user] || "gagal";
+        const resArea = document.getElementById("result-area");
 
-        resultArea.classList.remove("hidden");
+        resArea.classList.remove("hidden");
+        localStorage.setItem("mkr_checked", "true");
 
-        if (database[namaUser] === undefined || database[namaUser] === "") {
-          icon.innerHTML = "🔍";
-          title.innerText = "DATA TIDAK ADA";
-          title.className = "text-xl font-black mb-2 text-slate-400";
-          desc.innerHTML = `Nama <b>${inputNama.value}</b> tidak ditemukan atau belum diproses. Hubungi admin jika ini kesalahan!`;
-          actionArea.innerHTML = `<button onclick="retry()" class="w-full bg-slate-700 py-3 rounded-xl font-bold text-white">COBA LAGI</button>`;
+        if (status === "lulus") {
+          document.getElementById("result-icon").innerHTML = "👍✨👍";
+          document.getElementById("result-title").innerText = "ADMITTED";
+          document.getElementById("result-title").style.color = "#38bdf8";
+          // KATA-KATA MOTIVASI LULUS (DIBALIKIN LAGI)
+          document.getElementById("result-desc").innerHTML =
+            `Selamat, <b>${user.toUpperCase()}</b>. Kamu telah membuktikan bahwa batas itu hanya ilusi. Selamat bergabung di Mikrocrew. Perjalanan besarmu dimulai hari ini.`;
+          document.getElementById("action-area").innerHTML =
+            `<a href="https://chat.whatsapp.com/IWqxg23Dofs14WLsruPHTH" class="inline-block btn-auth px-12 py-5 rounded-full font-bold uppercase text-[10px] tracking-widest">Join Command Center</a>`;
+          celebrate();
         } else {
-          localStorage.setItem("mikrocrew_scanned", "true");
-
-          if (database[namaUser] === "lulus") {
-            icon.innerHTML = "✨";
-            title.innerText = "ANDA LULUS";
-            title.className = "text-2xl font-black mb-2 text-emerald-400";
-            desc.innerHTML = `Selamat <b>${inputNama.value}</b>! Welcome to the Crew. Standar kamu telah teruji. Silakan gabung ke grup koordinasi.`;
-            actionArea.innerHTML = `<a href="https://chat.whatsapp.com/CDlD8R2hEpB6bLgW4er0Q3" target="_blank" class="block w-full bg-emerald-600 py-4 rounded-xl font-bold text-white text-center">GABUNG GRUP WHATSAPP</a>`;
-            celebrate();
-          } else {
-            icon.innerHTML = "🙏🙏🙏💪💪";
-            title.innerText = "KAMU TIDAK LULUS";
-            title.className = "text-2xl font-black mb-2 text-rose-500";
-            desc.innerHTML = `Mohon maaf <b>${inputNama.value}</b>, kamu tidak lulus menjadi Microcrew kali ini. Tetap semangat dan teruslah berkembang!`;
-            actionArea.innerHTML = `<p class="text-[10px] text-slate-600 uppercase mt-4 tracking-widest text-center">Sistem Terkunci Otomatis</p>`;
-          }
+          document.getElementById("result-icon").innerHTML = "💪💪🙏💪💪";
+          document.getElementById("result-title").innerText = "NOT SELECTED";
+          document.getElementById("result-title").style.color = "#64748b";
+          // KATA-KATA MOTIVASI GAGAL (DIBALIKIN LAGI)
+          document.getElementById("result-desc").innerHTML =
+            `Terima kasih atas perjuanganmu, <b>${user.toUpperCase()}</b>. Gagal di pintu ini bukan berarti perjalananmu berakhir. Ingat, kegagalan adalah sukses yang sedang tertunda bagi mereka yang tidak pernah berhenti mencoba. Dunia butuh potensi hebatmu di tempat lain.`;
+          document.getElementById("action-area").innerHTML =
+            `<div class="mt-8 text-[9px] text-slate-600 uppercase tracking-[0.5em] mono">Gate Closed Permanently</div>`;
         }
       }
 
-      function retry() {
-        document.getElementById("result-area").classList.add("hidden");
-        document.getElementById("step1").classList.remove("hidden");
-        inputNama.value = "";
-        blackout.style.opacity = "1";
-      }
-
       function celebrate() {
-        var duration = 5 * 1000;
-        var animationEnd = Date.now() + duration;
-        var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
-        function randomInRange(min, max) { return Math.random() * (max - min) + min; }
-        var interval = setInterval(function () {
-          var timeLeft = animationEnd - Date.now();
-          if (timeLeft <= 0) return clearInterval(interval);
-          var particleCount = 50 * (timeLeft / duration);
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-          confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-        }, 250);
+        var end = Date.now() + 5 * 1000;
+        (function frame() {
+          confetti({
+            particleCount: 3,
+            angle: 60,
+            spread: 55,
+            origin: { x: 0 },
+            colors: ["#38bdf8", "#ffffff"],
+          });
+          confetti({
+            particleCount: 3,
+            angle: 120,
+            spread: 55,
+            origin: { x: 1 },
+            colors: ["#38bdf8", "#ffffff"],
+          });
+          if (Date.now() < end) requestAnimationFrame(frame);
+        })();
       }
     </script>
   </body>
 </html>
-
